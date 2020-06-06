@@ -15,6 +15,14 @@ Détermination des risques d'obsolescence dans les smartphones
 ```
 
 ## Définition de l'obsolescence
+
+On peut distinguer deux formes d'obsolescence : 
+-**l'obsolescence technique** qui est liée aux limites technologiques du produit : fin de vie des composants, produit plus assez performant etc..
+-**l'obsolescence psychologique**, liée à la perception du produit par le consommateur : produit démodé, nouveau produit avec un meilleur design etc
+
+Une étude similaire à celle que nous cherchons à effectuera déjà été réalisée : https://ieeexplore-ieee-org.gorgone.univ-toulouse.fr/document/7543522
+
+
 ```
 
 --> sur quantité de vente (mais problèmes de confidentialité pour le volume de vente d'un smartphone en particulier)
@@ -38,6 +46,7 @@ Déterminer le volume de vente par trimestre de chaque modèle de smartphone à 
 - technologie
 - effet de mode (taille de l'écran)
 
+
 si Apple était seule : vente en gaussienne (7 ans (largeur à mi-hauteur?) -> 2,5σ plutôt)
 mais l'arrivée des concurrents ou nouvelle techno ou effet de mode peut raccourcir cette largeur à mi-hauteur
 il peut y avoir aussi deux bosses parfois...
@@ -49,7 +58,21 @@ Peut-on corréler la fin d'un produit avec le début d'un autre ?
 ```
 
 - caméra 8mpx
-- nb de caméras etc.
+-Téléphone démontable
+-Batterie Amovible
+-poids
+-taille de l'écran
+-résolution de l'écran
+-autonomie de la batterie 
+-taille des appareils photos
+-navigateur web utilisé
+-port jack
+-bluetooth
+-email
+-radio
+-GPS
+-mode vibreur
+-clavier physique
 
 on va avoir un ensemble de caractéristiques aussi loin en arrière que possible (dès 2003 ça serait bien) des smartphones haut de gamme 
 
