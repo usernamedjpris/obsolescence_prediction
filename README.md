@@ -20,7 +20,18 @@ On peut distinguer deux formes d'obsolescence :
 - **l'obsolescence technique** qui est liée aux limites technologiques du produit : fin de vie des composants, produit plus assez performant etc..
 - **l'obsolescence psychologique**, liée à la perception du produit par le consommateur : produit démodé, nouveau produit avec un meilleur design etc
 
+## Étude de 2016 de Jennings, Wu et Terpenny
+
+### Résumé de l'étude
+
 Une étude similaire à celle que nous cherchons à effectuer a déjà été réalisée : https://ieeexplore-ieee-org.gorgone.univ-toulouse.fr/document/7543522
+
+L'étude se focalise davantage sur l'obsolescence technique que sur l'obsolescence psychologique. Les chercheurs ont rassemblés les caractéristiques techniques d'environ 7000 téléphones grâce à du web scrapping. Ces données sont accessibles à l'adresse http://connor.ie/research. A partir de ces données, ils ont essayé de créer un modèle permettant de prédire le risque d'obsolescence d'un smartphone.
+ils ont utilisé diverses méthodes comme des forêts aléatoires, des réseaux de neurone et des machines supports vecteurs. La meilleure précision semble venir des forêts aléatoires.
+
+### Critique de l'étude
+
+Cette étude date de 2016. Depuis, de nombreux smartphones ont vu le jour et mériteraient d'être ajoutés au modèle. De plus le modèle développé n'inclut pas vraiment la perception du consommateur sur le produit : pour créer la courbe du cycle de vie du smartphone, les chercheurs ont utilisé essentiellement les ventes des smartphones. Il serait intéressant de creuser davantage l'impact du marketing sur l'obsolescence. Enfin les caractéristiques techniques étudiés pourraient être plus complètes : l'une d'elle était la possibilité d'envoyer des SMS, ce que n'importe quelle smartphone peut faire aujourd'hui. Il pourrait être pertinent, d'utiliser des informations provenant de benchmark pour avoir des informations pointues sur les caractéristiques techniques des smartphones.  
 
 
 ```
