@@ -17,8 +17,8 @@ Détermination des risques d'obsolescence dans les smartphones
 ## Définition de l'obsolescence
 
 On peut distinguer deux formes d'obsolescence : 
--**l'obsolescence technique** qui est liée aux limites technologiques du produit : fin de vie des composants, produit plus assez performant etc..
--**l'obsolescence psychologique**, liée à la perception du produit par le consommateur : produit démodé, nouveau produit avec un meilleur design etc
+- **l'obsolescence technique** qui est liée aux limites technologiques du produit : fin de vie des composants, produit plus assez performant etc..
+- **l'obsolescence psychologique**, liée à la perception du produit par le consommateur : produit démodé, nouveau produit avec un meilleur design etc
 
 Une étude similaire à celle que nous cherchons à effectuera déjà été réalisée : https://ieeexplore-ieee-org.gorgone.univ-toulouse.fr/document/7543522
 
