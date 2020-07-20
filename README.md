@@ -7,7 +7,7 @@ Détermination des risques d'obsolescence dans les smartphones
 - **Objectif de l'étude :** détecter et prédire la fin de vie d'un produit.
 
 ## diagramme de fonctionnement pour l'interface graphique
-![diagramme](images/diagramme_pour_interface_graphique.png)
+![diagramme](images/diagramme_pour_interface_graphique.PNG)
 
 ## Définition de l'obsolescence
 
