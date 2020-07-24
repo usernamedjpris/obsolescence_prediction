@@ -3,7 +3,7 @@
 """
 Created on Wed Jul 22 15:30:23 2020
 
-@author: imen
+@author: Jérémie GANTET (usernamedjpris) INSA Toulouse, imen
 """
 
 import datetime
@@ -247,7 +247,7 @@ def benchmark(liste_fonction, liste_affichage, X_train, X_test, y_train, y_test,
     minimum = np.min([x for x in valeur_brute.values()])
     maximum = np.max([x for x in valeur_brute.values()])
     for f in defaut_debiles+defaut_intelligentes+liste_fonction: 
-         valeur_bg[f()] = lut[int((valeur_brute[f()]-minimum)/(maximum-minimum)*(len(lut)-1))]
+        valeur_bg[f()] = lut[int((valeur_brute[f()]-minimum)/(maximum-minimum)*(len(lut)-1))]
     print("\033[5;37;40m     Root Mean Squared Error    ")      #erreur quadratique moyenne pris à la racine carrée pour avoir des jours  
     print()
     
