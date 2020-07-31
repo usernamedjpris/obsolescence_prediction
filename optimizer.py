@@ -280,7 +280,7 @@ def exportResults(result, name):
                 
 
 
-def optimizeAllmodels(lstPhoneFile='1033smartphones.txt', dataPhoneFile='data.csv', comparativeFile='comparedistrib.csv', resultsFile='results.csv'):
+def optimizeAllmodels(lstPhoneFile='allsmartphones.txt', dataPhoneFile='data.csv', comparativeFile='comparedistrib.csv', resultsFile='results.csv'):
         
         """
         
