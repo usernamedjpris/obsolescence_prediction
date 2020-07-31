@@ -17,8 +17,8 @@ from datetime import date
 
 
 
-## forme de la courbe de distributionhypothèse 
-def distrib(t, x,debut,scale,var, offset):
+## forme de la courbe de distribution hypothèse 
+def distrib(t, x, debut, scale, var, offset):
         
         """
         renvoie la distribution selectionnee avec les parametres specifies
@@ -31,76 +31,91 @@ def distrib(t, x,debut,scale,var, offset):
         offset : permet de decaler legerement le debut de la distribution pour alpha et triangulaire. Pour Weibull ce parametre au parametre de forme
         
         """
-        #return stat.norm.pdf(x,debut+scale/2,scale/6)*var#*scale
-        #return lognorm.pdf(x,2, debut, scale/6)*var#*scale
+
         if t == 'a':
                 return alpha.pdf(x, 0.8, debut-scale/10+offset, scale/1.7)*var*scale if scale and var > 0 else [0]*len(x)
         elif t == 'w':
                 return weibull_min.pdf(x,offset, debut, scale)*var
-        #return exponweib.pdf(x,debut, scale)
         elif t == 't':
                 return triang.pdf(x, 0.1, debut+ offset, scale)*scale*var
 
-## tests des distributions
-
-x = np.arange(-3, 1000, 0.5)
-y = distrib('w',x,600,180,25000, 1.15) #ref
-y2 = distrib('w',x,1,500,50, 50) #plus large
-y3 = distrib('w', x,1,600,50, 100) #plus haut
-fig, ax = plt.subplots(figsize=(9,6))
-ax.plot(x,y)
-ax.plot(x,y2)
-ax.plot(x,y3)
-ax.set_xlim([-3,1000])
-ax.set_title("courbe de distribution de ventes d'un modèle")
-
-plt.show()
 
 
 
 
-## donnees brutes
-def fromApple(modele):
+def listOfSmartphone(name):
         
         """
         
-        filtre les modeles de la marque Apple
+        renvoie la liste des smartphones contenus dans le .txt name
+        
+        name : str, nom du fichier txt contenant les noms de tous les modeles
         
         """
-        return modele.find('Apple') != -1
 
-def removecsv(x):
+        with open(name) as file: #indiquer le chemin du fichier txt contenant les noms de tous les modeles
+                modeles = file.readlines()
+                return modeles
+
+
+def collectSmartphoneData(name):  
+        
         """
         
-        retire l'extension csv du nom du modele
+        recupere toutes les donnees sur tous les modeles de smartphone
+        
+        name : str, le nom du fichier contenant toutes les data des smartphones 
+        
+        
         
         """
-        return x.split('.')[0]
+        csvfile = pd.read_csv(name, sep=';') #indiquer chemin du fichier recensant toutes les caracteristiques des modeles
+        return csvfile
 
-#allresult = [['modele', 'score']]
 
-allresult = [['modele', 'triang', 'alpha', 'weibull', 'best' ]] #liste qui va recenser les distributions pour chaque modele
 
-with open('scrap\\1033smartphones.txt') as file: #indiquer le chemin du fichier txt contenant les noms de tous les modeles
-        modeles = file.readlines()
+def formatNameModel(modele):
+        
+        """
+        
+        formate la chaine de caractere correspondant au nom du modele pour la faire correspondre au nom du fichier csv telecharge via google trends
+        
+        modele : str, le nom du modele dans le fichier txt ou dans le csv contenant toutes les datas relatives au smartphones
+        
+        
+        """
+        newmodele = modele.replace('+', ' plus')
+        newmodele = newmodele.replace('(', ' ')
+        newmodele = newmodele.replace(')', '')
+        newmodele = newmodele.replace('\n', '')
+        if newmodele.find(',') != -1:
+                newmodele = newmodele.split(',')[0]
+        return newmodele
+        
 
-csvfile = pd.read_csv('scrap/data.csv', sep=';') #indiquer chemin du fichier recensant toutes les caracteristiques des modeles
-datedebut = {}
+def gatherLaunchdate(data):
+        
+        """
+        
+        Rassemble les dates de lancement des smartphones lorsqu'elles sont renseignees, depuis le talbleau de data
+        
+        data: tableau des donnees de tous les smartphones
+        
+        
+        """
+        datedebut = {} #dictionnaire dont les cles sont les noms des modeles et ou sont renseignees les dates de lancement
+        
+        for marque, modele, d  in zip(data["marque"], data["modèle"], data["date début commercialisation"]):                 
+                                  
+                ##formatage du fichier csv et recuperation de la date de lancement du modele
+                modele = formatNameModel(modele)
+                try:
+                        datedebut[marque+" "+modele] = date(int(d.split("/")[2]),int(d.split("/")[1]),int(d.split("/")[0]))
+                except (IndexError, AttributeError):
+                        datedebut[marque+" "+modele] = None
+        return datedebut
 
-for marque, modele, d  in zip(csvfile["marque"], csvfile["modèle"], csvfile["date"]): #formatage du fichier csv et recuperation de la date de lancement du modele
-        modele = modele.replace('+', ' plus')
-        modele = modele.replace('(', ' ')
-        modele = modele.replace(')', '')
-        if modele.find(',') != -1:
-                modele = modele.split(',')[0]
-        try:
-                datedebut[marque+" "+modele] = date(int(d.split("/")[2]),int(d.split("/")[1]),int(d.split("/")[0]))
-        except (IndexError, AttributeError):
-                datedebut[marque+" "+modele] = None
-
-print(len(datedebut))
             
-
 def calculatelaunchdate(d, chiffres):
         
         """
@@ -138,23 +153,15 @@ def objectif(t, X, date, courbe_brute, abscisses):
         abscisse : valeurs d'abscisses
         
         """
-        #print(X)
         cumul = [0 for i in range(len(abscisses))]
         largeur, hauteur, offset = X[0], X[1], X[2]
         y = distrib(t, abscisses, date, largeur, hauteur, offset)
         cumul = [cumul[i]+x for i,x in enumerate(y)]           
         result = float(abs(sum([abs(x-y) for x,y in zip(cumul, courbe_brute)])))
-        #print(result)
         return result
 
-
-
-
-
-
-
 ## solution
-def montre_solution(t, X, date, courbe_brute, abscisses):
+def montre_solution(t, X, date, courbe_brute, abscisses, modele):
         
         """
         Affiche la courbe de modelisation obtenue apres optimisation ainsi que la courbe brute
@@ -182,53 +189,139 @@ def montre_solution(t, X, date, courbe_brute, abscisses):
         plt.show()
 
 
-
-for modele in modeles: #iteration sur tous les modeles du fichier txt
+def recoverRawTrends(modele, directory='modtrends'):
         
-        ##formatage
-        
-        modele = modele.replace('\n', '')
-        modele = modele.replace('+', ' plus')
-        modele = modele.replace('(', ' ')
-        modele = modele.replace(')', '')
-        if modele.find(',') != -1:
-                modele = modele.split(',')[0]        
-        print(modele)
-        donnees_brutes = pd.read_csv('scrap\\modtrends\\'+modele+'.csv', sep=',')
+        donnees_brutes = pd.read_csv(directory+'\\'+modele+'.csv', sep=',')
         donnees_brutes["Mois"] = [date(int(x.split("-")[0]), int(x.split("-")[1]),1).toordinal() for x in donnees_brutes["Mois"]] 
-        donnees_brutes[modele] = [x for x in donnees_brutes[modele]] 
-       
+        donnees_brutes[modele] = [x for x in donnees_brutes[modele]]
+        return donnees_brutes
+
+def optimize1Model(modele, datedebut):
+        
+        """
+        
+        Modelise la courbe google trends par une fonction mathematique en optimisant ses parametres. Parmi les trois distributions, on retient la meilleure
+        
+        modele: str, le modele a optimiser
+        
+        datedebut: dict, dictionnaire associant a chaque modele sa date de lancement
+        
+        return: une liste avec l'ecart cummule entre la modelisation et la courbe brute pour les trois lois, la meilleure distribution et l'estimation de l'obsolescence associee.
+        
+        """
+        modele = formatNameModel(modele) 
+        print('optimisation du modele : ',modele)
+        donnees_brutes = recoverRawTrends(modele)
+
+
         ##recuperation ou calcul de la date de lancement
         launchdate = datedebut[modele]
         if not launchdate:
                 launchdate = calculatelaunchdate(donnees_brutes["Mois"], donnees_brutes[modele])
-        print('date pour ce modele : ', launchdate)
 
         ##fonctions d'optimisations suivant la distribution choisie
         def objW(X):
-                global donnees_brutes
                 return objectif('w', X, launchdate.toordinal(), donnees_brutes[modele], donnees_brutes["Mois"])
         def objA(X):
-                global donnees_brutes
                 return objectif('a', X, launchdate.toordinal(), donnees_brutes[modele], donnees_brutes["Mois"])
         def objT(X):
-                global donnees_brutes
                 return objectif('t', X, launchdate.toordinal(), donnees_brutes[modele], donnees_brutes["Mois"])        
-        
+
         ## minimizer
         x0W = [183, 25000, 1.15] #modelisation initiale pour Weibull
         bndsW = ((150, 1500), (24000,100000), (1.05, 1.9)) #bornes des parametres de la loi de Weibull
         x0A = [250,50, 0] #modelisation initiale pour Alpha et triangulaire
         bndsA = ((100, 5000),(1, 100), (-400, 50)) # bornes des parametres de la loi Alpha et triangulaires (entre 60 et 10000 jours, entre 1 et 100 unites ordonnée et entre -400 et 50 pour l'offset)
-        result = minimize(objW, x0W, method='Powell', bounds=bndsW, options={'maxiter': 100000, 'maxfev': 1000,'disp': True, 'return_all': True}) #fonction d'optimisation de notre modelisation
-        #allresult.append([modele, result.x[0]])      
-                         
-        montre_solution('w', result.x, launchdate.toordinal(), donnees_brutes[modele], donnees_brutes["Mois"]) #affichage de la solution
-        
-#with open('scrap\\obsoscorealpha.csv', mode = 'w') as resfile: 
- #       writer = csv.writer(resfile)
-  #      writer.writerows(allresult)
+        resultW = minimize(objW, x0W, method='Powell', bounds=bndsW, options={'maxiter': 100000, 'maxfev': 1000,'return_all': True}) #fonction d'optimisation de notre modelisation
+        ecartW = objectif('w', resultW.x, launchdate.toordinal(), donnees_brutes[modele], donnees_brutes["Mois"])
+        min = 'w'
+        resultA = minimize(objA, x0A, method='Powell', bounds=bndsA, options={'maxiter': 100000, 'maxfev': 1000,'return_all': True})
+        ecartA = objectif('a', resultA.x, launchdate.toordinal(), donnees_brutes[modele], donnees_brutes["Mois"])
+        if ecartA < ecartW:
+                min = 'a'
+        resultT = minimize(objT, x0A, method='Powell', bounds=bndsA, options={'maxiter': 100000, 'maxfev': 1000,'return_all': True})
+        ecartT = objectif('a', resultT.x, launchdate.toordinal(), donnees_brutes[modele], donnees_brutes["Mois"])
+        if (ecartT < ecartA and min =='a') or (ecartT < ecartW and min == 'w'):
+                min = 't'
+        print('meilleure distribution : '+min)
+        print('Parametres optimisés : ', end='')
+        if min =='a':  
+                print(resultA.x)
+                best = resultA
+                minscore = round(alpha.ppf(0.8, 0.8, loc = launchdate.toordinal()-resultA.x[0]/10+resultA.x[2], scale = resultA.x[0]/1.7) - launchdate.toordinal())                                                                                                                                   
+        elif min == 't':
+                print(resultT.x)
+                best = resultT
+                minscore = round(triang.stats(0.1, launchdate.toordinal()+ resultT.x[2], resultT.x[0], 'm') + 2.5*math.sqrt(triang.stats(0.1, launchdate.toordinal()+ resultT.x[2], resultT.x[0], 'v')) - launchdate.toordinal())
+        else:
+                print(resultW.x)
+                best = resultW
+                minscore = round(weibull_min.stats(resultW.x[2], launchdate.toordinal(), resultW.x[0], 'm') + 2.5*math.sqrt(weibull_min.stats(resultW.x[2], launchdate.toordinal(), resultW.x[0], 'v')) - launchdate.toordinal())
+        print()
+       # montre_solution(min, best.x, launchdate.toordinal(), donnees_brutes[modele], donnees_brutes["Mois"], modele) #affichage de la solution
+      
+        return([modele, resultA.x, resultT.x, resultW.x], [modele, ecartT, ecartA, ecartW, min, minscore])         
 
+def exportResults(result, name):
+        
+        """
+        
+        Exporte les resultats de l'algorithme d'optimisation dans  un fichier csv
+        
+        result: la liste contenant le resultat de l'algorithme
+        
+        name: le nom du fichier de sortie
+        
+        
+        """
+        with open(name, mode = 'w') as resultfile:
+                writer = csv.writer(resultfile)
+                writer.writerows(result)
+                
+
+
+def optimizeAllmodels(lstPhoneFile='1033smartphones.txt', dataPhoneFile='data.csv', comparativeFile='comparedistrib.csv', resultsFile='results.csv'):
+        
+        """
+        
+        Applique l'algorithme d'optimisation sur tous les modeles de telephones. Enregistre les resultats dans des fichiers csv.
+        Les resultats se presentent sous deux formes : 
+        -un fichier "comparativeFile" comportant un comparatif des ecarts observes entre les 3 types de distributions et avec l'estimation de l'obsolescence pour la meilleure distribution.
+        -un fichier "resultsFile" composé des paramètres des distributions optimisées pour les trois types de distributions
+        
+        lstPhoneFile: nom du fichier txt contenant les noms des modeles a etudier
+        
+        dataPhoneFile: nom du fichier csv contenant les data sur tous les modeles de telephones
+        
+        comparativeFile: nom du fichier csv qui contiendra le comparatif des distributions
+        
+        resultsFile: nom du fichiers csv qui contiendra les parametres des trois distributions
+        
+        
+        """
+        
+        allsmartphones = listOfSmartphone(lstPhoneFile)
+        
+        datasmartphones = collectSmartphoneData(dataPhoneFile)
+        
+        datedebut = gatherLaunchdate(datasmartphones)
+        
+        allresults = [['modele', 'largeurA', 'hauteurA', 'paramA', 'largeurT', 'hauteurT', 'paramT', 'largeurW', 'hauteurW', 'paramW']]
+        
+        comparedistrib = [['modele', 'triang', 'alpha', 'weibull', 'best', 'minscore' ]]        
+        
+        for smartphone in allsmartphones:
+                
+                results,comparatif = optimize1Model(smartphone, datedebut)
+                
+                comparedistrib.append(comparatif)
+                allresults.append([results[0], results[1][0], results[1][1], results[1][2], results[2][0], results[2][1], results[2][2], results[3][0], results[3][1], results[3][2]])                                                        
+                  
+        exportResults(allresults, resultsFile)
+        exportResults(comparedistrib, comparativeFile)
+        
+optimizeAllmodels()
+        
 
 
         
